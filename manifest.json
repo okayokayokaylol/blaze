@@ -1,0 +1,26 @@
+{
+  "name": "HazeUp.io",
+  "short_name": "HazeUp",
+  "description": "Legal Delta-8 Delivered",
+  "start_url": "/blaze/",
+  "scope": "/blaze/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf8f3",
+  "theme_color": "#2d5016",
+  "icons": [
+    {
+      "src": "/blaze/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/blaze/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["shopping", "lifestyle"]
+}
