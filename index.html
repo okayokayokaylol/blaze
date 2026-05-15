@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+<meta name="theme-color" content="#0a0e08" />
+<title>EMBER · Small Batch THCa</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0a0e08; color: #e8eee0; font-family: 'Inter', -apple-system, sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  button { background: none; border: none; cursor: pointer; font-family: inherit; color: inherit; }
+  a { color: inherit; text-decoration: none; }
+  input, textarea { font-family: inherit; }
+
+  /* COLOR TOKENS */
+  :root {
+    --bg: #0a0e08;
+    --bg-2: #0f140d;
+    --bg-3: #1a201a;
+    --border: #1a201a;
+    --border-2: #3a4a3a;
+    --text: #e8eee0;
+    --text-2: #a0aa90;
+    --text-3: #7a8a6a;
+    --text-4: #5a6a5a;
+    --accent: #d4ff4f;
+    --accent-2: #b8e62a;
+  }
+
+  /* DISPLAY FONT */
+  .display { font-family: 'Bebas Neue', 'Impact', sans-serif; letter-spacing: 0.02em; line-height: 0.9; }
+  .uppercase { text-transform: uppercase; }
+  .track-wide { letter-spacing: 0.2em; }
+  .track-wider { letter-spacing: 0.3em; }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* PROMO BAR */
+  .promo-bar { background: var(--accent); color: var(--bg); text-align: center; padding: 8px 12px; font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; font-weight: 600; }
+
+  /* NAV */
+  nav.main-nav { position: sticky; top: 0; z-index: 40; background: rgba(10,14,8,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; max-width: 1200px; margin: 0 auto; }
+  .nav-brand { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.12em; color: var(--accent); }
+  .nav-links { display: none; gap: 32px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em; color: #c0c8b8; }
+  .nav-links button:hover { color: white; }
+  @media (min-width: 768px) { .nav-links { display: flex; } }
+  .stash-btn { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--border-2); font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text); transition: background 0.2s; position: relative; }
+  .stash-btn:hover { background: rgba(255,255,255,0.05); }
+  .stash-count { background: var(--accent); color: var(--bg); font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 999px; margin-left: 4px; }
+
+  /* HERO */
+  .hero { position: relative; overflow: hidden; min-height: 70vh; padding: 96px 0; }
+  .hero-bg { position: absolute; inset: 0; opacity: 0.3; background: radial-gradient(ellipse at 30% 40%, #2a4a1a 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, #1a3a0a 0%, transparent 50%); }
+  .hero-grid { position: absolute; inset: 0; opacity: 0.04; background-image: repeating-linear-gradient(0deg, #fff 0px, transparent 1px, transparent 4px), repeating-linear-gradient(90deg, #fff 0px, transparent 1px, transparent 4px); }
+  .hero-inner { position: relative; display: grid; grid-template-columns: 1fr; gap: 48px; align-items: center; }
+  @media (min-width: 768px) { .hero-inner { grid-template-columns: 1fr 1fr; } }
+  .hero-eyebrow { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; }
+  .hero-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 8vw, 112px); line-height: 0.9; color: var(--text); }
+  .hero-title .accent { color: var(--accent); }
+  .hero-sub { margin-top: 24px; font-size: 18px; line-height: 1.6; color: var(--text-2); max-width: 440px; }
+  .hero-cta { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn-primary { padding: 16px 32px; background: var(--accent); color: var(--bg); font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: transform 0.2s; }
+  .btn-primary:hover { transform: scale(1.02); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { padding: 16px 32px; border: 1px solid var(--border-2); color: var(--text); font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; transition: background 0.2s; }
+  .btn-secondary:hover { background: rgba(255,255,255,0.05); }
+
+  .hero-visual { position: relative; aspect-ratio: 1; display: none; }
+  @media (min-width: 768px) { .hero-visual { display: block; } }
+  .hero-circle-glow { position: absolute; inset: 0; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); filter: blur(40px); }
+  .hero-circle-ring { position: absolute; inset: 48px; border-radius: 50%; border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; }
+  .hero-stat-tr { position: absolute; top: 0; right: 0; text-align: right; color: var(--accent); }
+  .hero-stat-bl { position: absolute; bottom: 0; left: 0; color: var(--accent); }
+  .hero-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; }
+  .hero-stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; color: var(--text-3); }
+
+  /* VALUE PROPS */
+  .props { background: var(--bg-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 48px 0; }
+  .props-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+  @media (min-width: 768px) { .props-grid { grid-template-columns: repeat(4, 1fr); } }
+  .prop { display: flex; gap: 16px; align-items: flex-start; }
+  .prop-icon { color: var(--accent); flex-shrink: 0; width: 28px; height: 28px; }
+  .prop-label { font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; }
+  .prop-desc { font-size: 13px; margin-top: 4px; color: var(--text-3); }
+
+  /* SECTION */
+  section.block { padding: 80px 0; }
+  section.block.alt { background: var(--bg-2); }
+  .section-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; color: var(--text-3); }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--text); line-height: 1; margin-top: 4px; }
+  .section-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 40px; flex-wrap: wrap; gap: 16px; }
+  .view-all { font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+
+  /* PRODUCT GRID */
+  .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  @media (min-width: 768px) { .product-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 1024px) { .product-grid.catalog-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .product-card { cursor: pointer; }
+  .product-img { position: relative; aspect-ratio: 1; overflow: hidden; margin-bottom: 12px; background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-2) 100%); }
+  .product-img-glow { position: absolute; width: 128px; height: 128px; border-radius: 50%; opacity: 0.2; filter: blur(30px); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+  .product-img svg.leaf { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--accent); opacity: 0.4; width: 64px; height: 64px; }
+  .product-tag { position: absolute; top: 12px; left: 12px; padding: 4px 8px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; background: var(--accent); color: var(--bg); }
+  .product-soldout { position: absolute; inset: 0; background: rgba(8,10,8,0.7); display: flex; align-items: center; justify-content: center; }
+  .product-soldout-badge { padding: 8px 16px; border: 1px solid var(--accent); color: var(--accent); font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; }
+  .product-quickadd { position: absolute; bottom: 12px; right: 12px; opacity: 0; padding: 8px 12px; background: var(--accent); color: var(--bg); font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 600; display: flex; align-items: center; gap: 4px; transition: opacity 0.2s; }
+  .product-card:hover .product-quickadd { opacity: 1; }
+  .product-meta { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3); }
+  .product-name { font-size: 16px; font-weight: 600; margin-top: 4px; color: var(--text); }
+  .product-price { font-size: 14px; color: var(--text-2); margin-top: 2px; }
+
+  /* CATEGORY TILES */
+  .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  @media (min-width: 768px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
+  .cat-tile { aspect-ratio: 3/4; padding: 24px; background: linear-gradient(180deg, var(--bg-3) 0%, var(--bg) 100%); border: 1px solid #2a3a2a; display: flex; flex-direction: column; justify-content: space-between; text-align: left; transition: transform 0.2s; }
+  .cat-tile:hover { transform: scale(1.02); }
+  .cat-icon { color: var(--accent); width: 32px; height: 32px; }
+  .cat-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.04em; color: var(--text); line-height: 1; }
+  .cat-desc { font-size: 11px; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3); }
+  .cat-link { margin-top: 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+
+  /* HOW IT WORKS */
+  .steps { display: grid; grid-template-columns: 1fr; gap: 32px; }
+  @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .step { background: var(--bg); border: 1px solid var(--border); padding: 32px; }
+  .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--accent); line-height: 1; }
+  .step-title { font-size: 18px; font-weight: 600; margin-top: 16px; color: var(--text); }
+  .step-desc { font-size: 14px; margin-top: 8px; line-height: 1.6; color: var(--text-2); }
+
+  /* CATALOG */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 32px 0 40px; }
+  .filter-btn { padding: 8px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; border: 1px solid var(--border-2); background: transparent; color: var(--text); transition: all 0.2s; }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .catalog-head h1 { font-family: 'Bebas Neue', sans-serif; font-size: 64px; line-height: 1; color: var(--text); margin-top: 4px; }
+  .catalog-count { color: var(--text-2); margin-top: 8px; font-size: 14px; }
+
+  /* PRODUCT DETAIL */
+  .pd-back { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 32px; display: inline-flex; align-items: center; gap: 8px; }
+  .pd-grid { display: grid; grid-template-columns: 1fr; gap: 48px; }
+  @media (min-width: 768px) { .pd-grid { grid-template-columns: 1fr 1fr; } }
+  .pd-image { aspect-ratio: 1; position: relative; overflow: hidden; background: linear-gradient(135deg, var(--bg-3) 0%, var(--bg-2) 100%); }
+  .pd-image-glow { position: absolute; width: 256px; height: 256px; border-radius: 50%; opacity: 0.2; filter: blur(60px); top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--accent); }
+  .pd-image svg.leaf-big { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: var(--accent); opacity: 0.5; width: 140px; height: 140px; }
+  .pd-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; color: var(--text); }
+  .pd-price { margin-top: 16px; font-size: 24px; color: var(--accent); }
+  .pd-blurb { margin-top: 24px; font-size: 16px; line-height: 1.6; color: var(--text-2); }
+  .pd-section { margin-top: 32px; }
+  .pd-section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3); margin-bottom: 12px; }
+  .size-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .size-btn { padding: 8px 16px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.15em; border: 1px solid var(--border-2); color: var(--text); transition: all 0.2s; }
+  .size-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .qty-row { display: flex; align-items: center; gap: 12px; }
+  .qty-btn { width: 40px; height: 40px; border: 1px solid var(--border-2); display: flex; align-items: center; justify-content: center; color: var(--text); transition: background 0.2s; }
+  .qty-btn:hover { background: rgba(255,255,255,0.05); }
+  .qty-val { width: 48px; text-align: center; color: var(--text); }
+  .pd-add { margin-top: 40px; width: 100%; padding: 20px; background: var(--accent); color: var(--bg); font-size: 13px; text-transform: uppercase; letter-spacing: 0.25em; font-weight: 600; transition: transform 0.2s; }
+  .pd-add:hover { transform: scale(1.01); }
+  .pd-add:disabled { background: var(--border-2); cursor: not-allowed; opacity: 0.7; }
+  .pd-trust { margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .pd-trust div { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--text-2); margin-bottom: 12px; }
+  .pd-trust svg { color: var(--accent); width: 16px; height: 16px; }
+
+  /* LABS */
+  .labs-intro { max-width: 720px; margin: 0 auto; }
+  .lab-list { margin-top: 48px; display: flex; flex-direction: column; gap: 12px; }
+  .lab-row { display: flex; align-items: center; justify-content: space-between; padding: 20px; background: var(--bg-2); border: 1px solid var(--border); transition: background 0.2s; }
+  .lab-row:hover { background: rgba(255,255,255,0.03); }
+  .lab-name { font-weight: 600; color: var(--text); }
+  .lab-batch { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3); margin-top: 4px; }
+  .lab-view { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; padding: 8px 16px; border: 1px solid var(--border-2); color: var(--accent); transition: background 0.2s; }
+  .lab-view:hover { background: rgba(255,255,255,0.05); }
+
+  /* STASH DRAWER */
+  .stash-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.6); display: flex; justify-content: flex-end; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .stash-overlay.open { opacity: 1; pointer-events: auto; }
+  .stash-drawer { width: 100%; max-width: 440px; height: 100%; background: var(--bg); border-left: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s; }
+  .stash-overlay.open .stash-drawer { transform: translateX(0); }
+  .stash-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .stash-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.04em; color: var(--text); line-height: 1; }
+  .stash-subtitle { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3); margin-top: 4px; }
+  .stash-close { padding: 8px; color: var(--text); }
+  .stash-close:hover { background: rgba(255,255,255,0.05); }
+  .stash-body { flex: 1; overflow-y: auto; padding: 24px; }
+  .stash-empty { text-align: center; padding: 80px 0; }
+  .stash-empty svg { color: var(--border-2); width: 48px; height: 48px; margin: 0 auto 16px; }
+  .stash-item { display: flex; gap: 16px; padding: 12px; background: var(--bg-2); border: 1px solid var(--border); margin-bottom: 12px; }
+  .stash-item-img { width: 64px; height: 64px; background: var(--bg-3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stash-item-img svg { color: var(--accent); width: 24px; height: 24px; }
+  .stash-item-info { flex: 1; min-width: 0; }
+  .stash-item-name { font-size: 14px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stash-item-meta { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+  .stash-item-price { font-size: 14px; color: var(--accent); margin-top: 4px; }
+  .stash-item-remove { color: var(--text-3); }
+  .stash-footer { padding: 24px; border-top: 1px solid var(--border); }
+  .stash-total { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-2); }
+  .stash-note { font-size: 11px; color: var(--text-3); margin-bottom: 16px; }
+  .stash-submit { width: 100%; padding: 16px; background: var(--accent); color: var(--bg); font-size: 13px; text-transform: uppercase; letter-spacing: 0.25em; font-weight: 600; transition: transform 0.2s; }
+  .stash-submit:hover { transform: scale(1.01); }
+
+  /* RESERVATION FORM */
+  .res-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 768px) { .res-grid { grid-template-columns: 1fr 1fr; } .res-grid .full { grid-column: 1 / -1; } }
+  .res-input { width: 100%; padding: 12px 16px; background: transparent; border: 1px solid var(--border-2); color: var(--text); font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .res-input:focus { border-color: var(--accent); }
+  .res-input::placeholder { color: var(--text-3); }
+  .res-summary { margin-top: 40px; padding: 24px; background: var(--bg-2); border: 1px solid var(--border); }
+  .res-summary-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3); margin-bottom: 16px; }
+  .res-summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: var(--text); }
+  .res-summary-total { display: flex; justify-content: space-between; padding-top: 16px; margin-top: 16px; border-top: 1px solid var(--border); color: var(--accent); font-weight: 600; }
+  .res-success { text-align: center; padding: 80px 24px; }
+  .res-success-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+  .res-success-circle svg { color: var(--bg); width: 40px; height: 40px; }
+
+  /* FOOTER */
+  footer { background: var(--bg); border-top: 1px solid var(--border); margin-top: 80px; }
+  .footer-grid { display: grid; grid-template-columns: 1fr; gap: 32px; padding: 64px 0; }
+  @media (min-width: 768px) { .footer-grid { grid-template-columns: repeat(4, 1fr); } }
+  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.1em; color: var(--accent); line-height: 1; }
+  .footer-tag { margin-top: 16px; font-size: 14px; color: var(--text-3); line-height: 1.6; }
+  .footer-col-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text); margin-bottom: 16px; }
+  .footer-col { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--text-3); }
+  .footer-col a:hover { color: var(--text); }
+  .footer-form { display: flex; gap: 8px; }
+  .footer-form input { flex: 1; padding: 8px 12px; background: transparent; border: 1px solid var(--border-2); color: var(--text); font-size: 13px; outline: none; }
+  .footer-form button { padding: 8px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; font-weight: 600; background: var(--accent); color: var(--bg); }
+  .footer-bottom { border-top: 1px solid var(--border); }
+  .footer-bottom-inner { padding: 24px 0; font-size: 11px; color: var(--text-4); line-height: 1.7; }
+
+  /* AGE GATE */
+  .age-gate { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(8,10,8,0.96); backdrop-filter: blur(8px); }
+  .age-card { max-width: 440px; width: 100%; text-align: center; }
+  .age-logo { font-family: 'Bebas Neue', sans-serif; font-size: 64px; letter-spacing: 0.1em; color: var(--accent); line-height: 1; }
+  .age-sub { margin-top: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4em; color: var(--text-3); }
+  .age-q { font-size: 11px; text-transform: uppercase; letter-spacing: 0.3em; color: var(--text-3); margin: 48px 0 16px; }
+  .age-q-main { font-size: 18px; line-height: 1.5; color: var(--text); margin-bottom: 32px; }
+  .age-q-main .accent { color: var(--accent); }
+  .age-buttons { display: flex; gap: 12px; justify-content: center; }
+  .age-disclaimer { margin-top: 40px; font-size: 11px; line-height: 1.6; color: var(--text-4); }
+
+  /* PAGE VISIBILITY */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* UTILITY */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- AGE GATE -->
+<div class="age-gate" id="ageGate">
+  <div class="age-card">
+    <div class="age-logo">EMBER</div>
+    <div class="age-sub">THCa · Cultivated · Curated</div>
+    <p class="age-q">Verify Age</p>
+    <p class="age-q-main">You must be <span class="accent">21 or older</span> to enter this site.</p>
+    <div class="age-buttons">
+      <button class="btn-primary" onclick="confirmAge()">I'm 21 or older</button>
+      <button class="btn-secondary" onclick="window.location.href='https://google.com'">Leave</button>
+    </div>
+    <p class="age-disclaimer">By entering you confirm you are of legal age in your jurisdiction. Products contain hemp-derived THCa. Check your state's rules before ordering.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <!-- PROMO BAR -->
+  <div class="promo-bar">Free discreet shipping over $75 · Reserve now, we ship next business day</div>
+
+  <!-- NAV -->
+  <nav class="main-nav">
+    <div class="nav-inner">
+      <button class="nav-brand" onclick="navigate('home')">EMBER</button>
+      <div class="nav-links">
+        <button onclick="navigate('catalog')">Shop</button>
+        <button onclick="navigate('catalog','flower')">Flower</button>
+        <button onclick="navigate('catalog','preroll')">Pre-Rolls</button>
+        <button onclick="navigate('catalog','vape')">Vapes</button>
+        <button onclick="navigate('catalog','edible')">Edibles</button>
+        <button onclick="navigate('labs')">Lab Reports</button>
+      </div>
+      <button class="stash-btn" onclick="openStash()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Stash</span>
+        <span class="stash-count hidden" id="stashCount">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="container hero-inner">
+        <div>
+          <div class="hero-eyebrow">Cultivated · Curated · Delivered</div>
+          <h1 class="hero-title">SMALL BATCH.<br><span class="accent">SERIOUS</span> WEED.</h1>
+          <p class="hero-sub">Federally legal THCa flower, pre-rolls, vapes, and edibles. Reserve online, shipped discreet, lab-tested every batch.</p>
+          <div class="hero-cta">
+            <button class="btn-primary" onclick="navigate('catalog')">Browse the Drop →</button>
+            <button class="btn-secondary" onclick="navigate('labs')">See Lab Reports</button>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-circle-glow"></div>
+          <div class="hero-circle-ring">
+            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--accent)"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c1.4 4.5 1.6 9.6-1.4 13.5C16.4 19.2 13.4 20 11 20z"/><path d="M2 22c1.5-3.5 3-5.5 7.5-7"/></svg>
+          </div>
+          <div class="hero-stat-tr">
+            <div class="hero-stat-num">31%</div>
+            <div class="hero-stat-label">Max THCa</div>
+          </div>
+          <div class="hero-stat-bl">
+            <div class="hero-stat-num">2026</div>
+            <div class="hero-stat-label">Spring Drop</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="props">
+      <div class="container props-grid" id="propsGrid"></div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-eyebrow">This Week</div>
+            <h2 class="section-title">House Favorites</h2>
+          </div>
+          <button class="view-all" onclick="navigate('catalog')">View All →</button>
+        </div>
+        <div class="product-grid" id="featuredGrid"></div>
+      </div>
+    </section>
+
+    <section class="block alt">
+      <div class="container">
+        <h2 class="section-title" style="margin-bottom: 40px;">Shop by Category</h2>
+        <div class="cat-grid" id="catGrid"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-eyebrow">Just Dropped</div>
+            <h2 class="section-title">New Arrivals</h2>
+          </div>
+        </div>
+        <div class="product-grid" id="newGrid"></div>
+      </div>
+    </section>
+
+    <section class="block alt">
+      <div class="container">
+        <div style="text-align: center; margin-bottom: 48px;">
+          <div class="section-eyebrow">The Process</div>
+          <h2 class="section-title">Reserve. We Confirm. Ships Out.</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-title">Build Your Stash</div>
+            <div class="step-desc">Browse the menu and add what you want to your stash. No payment, no commitment.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-title">Submit Reservation</div>
+            <div class="step-desc">Drop your contact info. We text or email to confirm your order and payment method.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-title">Ships Discreet</div>
+            <div class="step-desc">Hand-packed and shipped next business day. Plain packaging, signature on delivery.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- CATALOG PAGE -->
+  <div class="page" id="page-catalog">
+    <div class="container" style="padding: 48px 24px;">
+      <div class="catalog-head">
+        <div class="section-eyebrow">Catalog</div>
+        <h1 id="catalogTitle">Everything</h1>
+        <p class="catalog-count" id="catalogCount"></p>
+      </div>
+      <div class="filters" id="catalogFilters"></div>
+      <div class="product-grid catalog-grid" id="catalogGrid"></div>
+    </div>
+  </div>
+
+  <!-- PRODUCT DETAIL PAGE -->
+  <div class="page" id="page-product">
+    <div class="container" style="padding: 48px 24px;">
+      <button class="pd-back" onclick="navigate('catalog', currentCategory)">← Back to Catalog</button>
+      <div class="pd-grid" id="pdContent"></div>
+    </div>
+  </div>
+
+  <!-- LABS PAGE -->
+  <div class="page" id="page-labs">
+    <div class="container" style="padding: 64px 24px;">
+      <div class="labs-intro">
+        <div class="section-eyebrow">Transparency</div>
+        <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 64px; line-height: 1; color: var(--text);">Lab Reports</h1>
+        <p style="margin-top: 24px; font-size: 18px; line-height: 1.6; color: var(--text-2);">Every batch is sent to an accredited third-party lab. Certificates of Analysis test for cannabinoid potency, residual solvents, pesticides, heavy metals, and microbial contaminants. No batch ships without a passing COA.</p>
+        <div class="lab-list" id="labList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESERVATION PAGE -->
+  <div class="page" id="page-reserve">
+    <div class="container" style="padding: 48px 24px; max-width: 720px;">
+      <div id="reserveContent"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div class="footer-brand">EMBER</div>
+        <p class="footer-tag">Small-batch THCa. Lab-tested. Shipped discreet.</p>
+      </div>
+      <div>
+        <div class="footer-col-label">Shop</div>
+        <div class="footer-col">
+          <a onclick="navigate('catalog','flower')" style="cursor:pointer">Flower</a>
+          <a onclick="navigate('catalog','preroll')" style="cursor:pointer">Pre-Rolls</a>
+          <a onclick="navigate('catalog','vape')" style="cursor:pointer">Vapes</a>
+          <a onclick="navigate('catalog','edible')" style="cursor:pointer">Edibles</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-label">Info</div>
+        <div class="footer-col">
+          <a onclick="navigate('labs')" style="cursor:pointer">Lab Reports</a>
+          <a>Shipping</a>
+          <a>Returns</a>
+          <a>Contact</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-label">Stay Updated</div>
+        <div class="footer-form">
+          <input placeholder="Email" />
+          <button>Join</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <p style="margin-bottom: 8px;">© 2026 Ember (placeholder brand). All rights reserved.</p>
+        <p>These statements have not been evaluated by the FDA. Products are not intended to diagnose, treat, cure, or prevent any disease. Must be 21+. Hemp-derived, federally compliant (&lt;0.3% Δ9-THC). We do not ship to: Arkansas, Idaho, Minnesota, Oregon, or Rhode Island. Check your local laws before ordering.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- STASH DRAWER -->
+  <div class="stash-overlay" id="stashOverlay" onclick="closeStash(event)">
+    <div class="stash-drawer" onclick="event.stopPropagation()">
+      <div class="stash-header">
+        <div>
+          <div class="stash-title">Your Stash</div>
+          <div class="stash-subtitle" id="stashSubtitle">0 items reserved</div>
+        </div>
+        <button class="stash-close" onclick="closeStash()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="stash-body" id="stashBody"></div>
+      <div class="stash-footer hidden" id="stashFooter">
+        <div class="stash-total">
+          <span>Reservation total</span>
+          <span id="stashTotal">$0.00</span>
+        </div>
+        <div class="stash-note">Final price confirmed when we contact you. No charge yet.</div>
+        <button class="stash-submit" onclick="goReserve()">Submit Reservation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const PRODUCTS = [
+  { id: 'p1', name: 'Midnight Mango', category: 'flower', strain: 'indica', thca: 28.4, price: 45, sizes: ['3.5g','7g','14g','28g'], priceRange: '$45 – $260', tag: 'top shelf', sold_out: false, blurb: 'Heavy, sweet, late-night strain. Dense buds with deep purple undertones and a tropical nose.' },
+  { id: 'p2', name: 'Lemon Static', category: 'flower', strain: 'sativa', thca: 26.1, price: 42, sizes: ['3.5g','7g','14g','28g'], priceRange: '$42 – $240', tag: 'new', sold_out: false, blurb: 'Bright citrus head-buzz. The kind of strain that makes you reorganize your closet at 2pm.' },
+  { id: 'p3', name: 'Berry Static', category: 'flower', strain: 'hybrid', thca: 24.8, price: 38, sizes: ['3.5g','7g','14g','28g'], priceRange: '$38 – $220', tag: 'staff pick', sold_out: false, blurb: 'Balanced hybrid with a jammy, mixed-berry profile. The crowd-pleaser of the menu.' },
+  { id: 'p4', name: 'Ghost Driver', category: 'flower', strain: 'sativa', thca: 31.2, price: 55, sizes: ['3.5g','7g','14g'], priceRange: '$55 – $190', tag: 'top shelf', sold_out: true, blurb: 'Loud, gassy, and not subtle. For the seasoned palate. Limited drops only.' },
+  { id: 'p5', name: 'Mango Static Pre-Roll 10pk', category: 'preroll', thca: 27.5, price: 39, sizes: ['10ct'], priceRange: '$39', tag: 'best seller', sold_out: false, blurb: 'Ten infused minis. Slow burn, fruit-forward, ready to go.' },
+  { id: 'p6', name: 'Lemon Static Pre-Roll 2pk', category: 'preroll', thca: 26.1, price: 9, sizes: ['2ct'], priceRange: '$9', tag: null, sold_out: false, blurb: 'Two-pack of citrus-coated minis. Pocket-sized, share-friendly.' },
+  { id: 'p7', name: 'Berry Live Resin Vape', category: 'vape', thca: 82.4, price: 35, sizes: ['1g'], priceRange: '$35', tag: 'new', sold_out: false, blurb: 'Single-source live resin. No additives, no fillers. Tastes like the strain, not the cartridge.' },
+  { id: 'p8', name: 'Mango Live Resin Vape', category: 'vape', thca: 80.1, price: 35, sizes: ['1g'], priceRange: '$35', tag: 'best seller', sold_out: false, blurb: 'Tropical, smooth, and stable across the whole pull. The vape we recommend first.' },
+  { id: 'p9', name: 'Sour Belt Gummies 200mg', category: 'edible', thca: 200, price: 22, sizes: ['10pk'], priceRange: '$22', tag: 'staff pick', sold_out: false, blurb: 'Ten 20mg gummies. Sweet, sour, and dose-able. Easy to split if you want a smaller cut.' },
+  { id: 'p10', name: 'Honey Drop Gummies 100mg', category: 'edible', thca: 100, price: 16, sizes: ['10pk'], priceRange: '$16', tag: null, sold_out: false, blurb: 'Lighter dose, mellow honey-citrus profile. Good entry point.' },
+];
+
+const CATEGORIES = [
+  { id: 'flower', label: 'Flower', desc: 'Premium THCa buds' },
+  { id: 'preroll', label: 'Pre-Rolls', desc: 'Ready when you are' },
+  { id: 'vape', label: 'Vapes', desc: 'Live resin carts' },
+  { id: 'edible', label: 'Edibles', desc: 'Dose-able treats' },
+];
+
+// SVG ICONS
+const ICONS = {
+  leaf: '<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19.2 2.96c1.4 4.5 1.6 9.6-1.4 13.5C16.4 19.2 13.4 20 11 20z"/><path d="M2 22c1.5-3.5 3-5.5 7.5-7"/></svg>',
+  flask: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/></svg>',
+  truck: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+  shield: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  minus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  check: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>',
+  x: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let stash = [];
+let currentPage = 'home';
+let currentCategory = null;
+let selectedProduct = null;
+
+// ============================================================
+// AGE GATE
+// ============================================================
+function confirmAge() {
+  document.getElementById('ageGate').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  try { localStorage.setItem('ember_age_verified', '1'); } catch(e) {}
+}
+
+// Skip gate if previously verified
+try {
+  if (localStorage.getItem('ember_age_verified') === '1') {
+    document.getElementById('ageGate').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+  }
+} catch(e) {}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function navigate(page, category = null) {
+  currentPage = page;
+  currentCategory = category;
+  selectedProduct = null;
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  window.scrollTo(0, 0);
+  if (page === 'catalog') renderCatalog();
+  if (page === 'labs') renderLabs();
+}
+
+// ============================================================
+// PRODUCT CARD HTML
+// ============================================================
+function productCardHTML(p) {
+  const glow = p.category === 'flower' ? '#7a9a4a' : p.category === 'vape' ? '#d4ff4f' : p.category === 'edible' ? '#ff7a4a' : '#9aaa7a';
+  const meta = p.strain ? `${p.strain} · ${p.thca}% THCa` : `${p.thca}mg THCa`;
+  return `
+    <div class="product-card" onclick="selectProduct('${p.id}')">
+      <div class="product-img">
+        <div class="product-img-glow" style="background:${glow}"></div>
+        ${ICONS.leaf.replace('width="64" height="64"', 'class="leaf" width="64" height="64"')}
+        ${p.tag ? `<div class="product-tag">${p.tag}</div>` : ''}
+        ${p.sold_out ? `<div class="product-soldout"><div class="product-soldout-badge">Sold Out</div></div>` : `<button class="product-quickadd" onclick="event.stopPropagation(); quickAdd('${p.id}')">${ICONS.plus} Reserve</button>`}
+      </div>
+      <div class="product-meta">${meta}</div>
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">${p.priceRange}</div>
+    </div>
+  `;
+}
+
+// ============================================================
+// HOME PAGE RENDER
+// ============================================================
+function renderHome() {
+  // Props
+  const props = [
+    { icon: ICONS.flask, label: 'Lab Tested', desc: 'Third-party COA every batch' },
+    { icon: ICONS.truck, label: 'Discreet Ship', desc: 'Plain packaging, no branding' },
+    { icon: ICONS.shield, label: 'Farm Bill Compliant', desc: '<0.3% Δ9-THC' },
+    { icon: ICONS.leaf.replace('width="64" height="64"', 'width="28" height="28"'), label: 'Indoor Grown', desc: 'Hand-trimmed, slow-cured' },
+  ];
+  document.getElementById('propsGrid').innerHTML = props.map(p => `
+    <div class="prop">
+      <div class="prop-icon">${p.icon}</div>
+      <div>
+        <div class="prop-label">${p.label}</div>
+        <div class="prop-desc">${p.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Featured
+  const featured = PRODUCTS.filter(p => p.tag === 'best seller' || p.tag === 'top shelf').slice(0, 4);
+  document.getElementById('featuredGrid').innerHTML = featured.map(productCardHTML).join('');
+
+  // Categories
+  document.getElementById('catGrid').innerHTML = CATEGORIES.map(c => `
+    <button class="cat-tile" onclick="navigate('catalog','${c.id}')">
+      <div class="cat-icon">${ICONS.leaf.replace('width="64" height="64"', 'width="32" height="32"')}</div>
+      <div>
+        <div class="cat-name">${c.label}</div>
+        <div class="cat-desc">${c.desc}</div>
+        <div class="cat-link">Shop →</div>
+      </div>
+    </button>
+  `).join('');
+
+  // New
+  const newArr = PRODUCTS.filter(p => p.tag === 'new' || p.tag === 'staff pick').slice(0, 4);
+  document.getElementById('newGrid').innerHTML = newArr.map(productCardHTML).join('');
+}
+
+// ============================================================
+// CATALOG
+// ============================================================
+function renderCatalog() {
+  const cat = currentCategory;
+  const filtered = cat ? PRODUCTS.filter(p => p.category === cat) : PRODUCTS;
+  document.getElementById('catalogTitle').textContent = cat ? CATEGORIES.find(c => c.id === cat).label : 'Everything';
+  document.getElementById('catalogCount').textContent = `${filtered.length} products available`;
+
+  const filters = [{ id: null, label: 'All' }, ...CATEGORIES];
+  document.getElementById('catalogFilters').innerHTML = filters.map(f => `
+    <button class="filter-btn ${f.id === cat ? 'active' : ''}" onclick="navigate('catalog', ${f.id ? `'${f.id}'` : 'null'})">${f.label}</button>
+  `).join('');
+
+  document.getElementById('catalogGrid').innerHTML = filtered.map(productCardHTML).join('');
+}
+
+// ============================================================
+// PRODUCT DETAIL
+// ============================================================
+function selectProduct(id) {
+  selectedProduct = PRODUCTS.find(p => p.id === id);
+  if (!selectedProduct) return;
+  renderProduct();
+  navigate('product');
+}
+
+let pdSize = null;
+let pdQty = 1;
+
+function renderProduct() {
+  const p = selectedProduct;
+  pdSize = p.sizes[0];
+  pdQty = 1;
+  const meta = p.strain ? `${p.strain} · ${p.thca}% THCa` : `${p.thca}mg THCa`;
+  document.getElementById('pdContent').innerHTML = `
+    <div class="pd-image">
+      <div class="pd-image-glow"></div>
+      ${ICONS.leaf.replace('width="64" height="64"', 'class="leaf-big" width="140" height="140"')}
+      ${p.tag ? `<div class="product-tag" style="top: 16px; left: 16px;">${p.tag}</div>` : ''}
+    </div>
+    <div>
+      <div class="product-meta" style="font-size: 11px;">${meta}</div>
+      <h1 class="pd-title">${p.name}</h1>
+      <div class="pd-price">${p.priceRange}</div>
+      <p class="pd-blurb">${p.blurb}</p>
+      <div class="pd-section">
+        <div class="pd-section-label">Size</div>
+        <div class="size-btns" id="sizeBtns">
+          ${p.sizes.map(s => `<button class="size-btn ${s === pdSize ? 'active' : ''}" onclick="setSize('${s}')">${s}</button>`).join('')}
+        </div>
+      </div>
+      <div class="pd-section">
+        <div class="pd-section-label">Quantity</div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="setQty(-1)">${ICONS.minus}</button>
+          <div class="qty-val" id="pdQty">1</div>
+          <button class="qty-btn" onclick="setQty(1)">${ICONS.plus}</button>
+        </div>
+      </div>
+      <button class="pd-add" id="pdAdd" onclick="addCurrentToStash()" ${p.sold_out ? 'disabled' : ''}>
+        ${p.sold_out ? 'Sold Out' : `Add to Stash · ${pdSize}`}
+      </button>
+      <div class="pd-trust">
+        <div>${ICONS.flask.replace('width="28" height="28"', 'width="16" height="16"')} Third-party lab tested (COA available)</div>
+        <div>${ICONS.truck.replace('width="28" height="28"', 'width="16" height="16"')} Discreet shipping, next business day</div>
+        <div>${ICONS.shield.replace('width="28" height="28"', 'width="16" height="16"')} Compliant with 2018 Farm Bill</div>
+      </div>
+    </div>
+  `;
+}
+
+function setSize(s) {
+  pdSize = s;
+  document.querySelectorAll('#sizeBtns .size-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === s);
+  });
+  const addBtn = document.getElementById('pdAdd');
+  if (!selectedProduct.sold_out) addBtn.textContent = `Add to Stash · ${s}`;
+}
+
+function setQty(delta) {
+  pdQty = Math.max(1, pdQty + delta);
+  document.getElementById('pdQty').textContent = pdQty;
+}
+
+function addCurrentToStash() {
+  if (selectedProduct.sold_out) return;
+  stash.push({ ...selectedProduct, size: pdSize, qty: pdQty });
+  updateStash();
+  openStash();
+}
+
+// ============================================================
+// LABS
+// ============================================================
+function renderLabs() {
+  document.getElementById('labList').innerHTML = PRODUCTS.slice(0, 6).map(p => `
+    <div class="lab-row">
+      <div>
+        <div class="lab-name">${p.name}</div>
+        <div class="lab-batch">Batch EMB-2026-${p.id.toUpperCase()} · ${p.thca}${p.strain ? '%' : 'mg'} THCa</div>
+      </div>
+      <button class="lab-view">View COA</button>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// STASH
+// ============================================================
+function quickAdd(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p || p.sold_out) return;
+  stash.push({ ...p, size: p.sizes[0], qty: 1 });
+  updateStash();
+  openStash();
+}
+
+function updateStash() {
+  const count = stash.length;
+  const countEl = document.getElementById('stashCount');
+  countEl.textContent = count;
+  countEl.classList.toggle('hidden', count === 0);
+
+  document.getElementById('stashSubtitle').textContent = `${count} ${count === 1 ? 'item' : 'items'} reserved`;
+
+  const body = document.getElementById('stashBody');
+  const footer = document.getElementById('stashFooter');
+  if (count === 0) {
+    body.innerHTML = `
+      <div class="stash-empty">
+        ${ICONS.leaf.replace('width="64" height="64"', 'width="48" height="48"')}
+        <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--text-3);">Empty stash</div>
+        <p style="margin-top: 8px; font-size: 14px; color: var(--text-2);">Add items to reserve</p>
+      </div>
+    `;
+    footer.classList.add('hidden');
+  } else {
+    body.innerHTML = stash.map((item, idx) => `
+      <div class="stash-item">
+        <div class="stash-item-img">${ICONS.leaf.replace('width="64" height="64"', 'width="24" height="24"')}</div>
+        <div class="stash-item-info">
+          <div class="stash-item-name">${item.name}</div>
+          <div class="stash-item-meta">${item.size} · Qty ${item.qty}</div>
+          <div class="stash-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+        </div>
+        <button class="stash-item-remove" onclick="removeStash(${idx})">${ICONS.x}</button>
+      </div>
+    `).join('');
+    footer.classList.remove('hidden');
+    const total = stash.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('stashTotal').textContent = `$${total.toFixed(2)}`;
+  }
+}
+
+function removeStash(idx) {
+  stash.splice(idx, 1);
+  updateStash();
+}
+
+function openStash() {
+  document.getElementById('stashOverlay').classList.add('open');
+}
+
+function closeStash(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('stashOverlay').classList.remove('open');
+}
+
+// ============================================================
+// RESERVATION
+// ============================================================
+function goReserve() {
+  closeStash();
+  renderReserve();
+  navigate('reserve');
+}
+
+function renderReserve() {
+  const total = stash.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('reserveContent').innerHTML = `
+    <button class="pd-back" onclick="navigate('home')">← Back</button>
+    <div class="section-eyebrow">Step 2 of 2</div>
+    <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; color: var(--text);">Lock In Your Stash</h1>
+    <p style="margin-top: 16px; margin-bottom: 32px; color: var(--text-2);">Submit your info and we'll reach out within 2 hours to confirm your order and arrange payment.</p>
+    <form id="resForm" onsubmit="submitReservation(event)">
+      <div class="res-grid">
+        <input class="res-input" name="name" placeholder="Full Name *" required />
+        <input class="res-input" name="email" type="email" placeholder="Email *" required />
+        <input class="res-input" name="phone" placeholder="Phone (for SMS confirmation) *" required />
+        <input class="res-input" name="state" placeholder="State (we don't ship to AR, ID, MN, OR, RI)" />
+        <input class="res-input full" name="address" placeholder="Shipping Address" />
+        <textarea class="res-input full" name="notes" rows="3" placeholder="Notes (optional)"></textarea>
+      </div>
+      <div class="res-summary">
+        <div class="res-summary-label">Reservation Summary</div>
+        ${stash.map(item => `
+          <div class="res-summary-row">
+            <span>${item.name} · ${item.size} × ${item.qty}</span>
+            <span>$${(item.price * item.qty).toFixed(2)}</span>
+          </div>
+        `).join('')}
+        <div class="res-summary-total">
+          <span>Estimated total</span>
+          <span>$${total.toFixed(2)}</span>
+        </div>
+      </div>
+      <button type="submit" class="pd-add">Submit Reservation</button>
+      <p style="margin-top: 16px; text-align: center; font-size: 11px; color: var(--text-3);">By submitting you confirm you are 21+ and have read our terms.</p>
+    </form>
+  `;
+}
+
+function submitReservation(e) {
+  e.preventDefault();
+  const form = e.target;
+  const phone = form.phone.value;
+  document.getElementById('reserveContent').innerHTML = `
+    <div class="res-success">
+      <div class="res-success-circle">${ICONS.check}</div>
+      <h1 style="font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; color: var(--text);">Reservation In</h1>
+      <p style="margin-top: 16px; font-size: 18px; color: var(--text-2);">We'll text ${phone} within 2 hours to confirm.</p>
+    </div>
+  `;
+  stash = [];
+  updateStash();
+  setTimeout(() => navigate('home'), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderHome();
+updateStash();
+
+// PWA service worker registration (uses existing sw.js)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
